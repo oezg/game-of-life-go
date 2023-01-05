@@ -1,6 +1,6 @@
 # Game of Life
 
-Project using slices, loops, string formatting, standard IO, and get confident working with random values in Golang.
+Project using slices, loops, string formatting, standard IO and random values in Golang.
 
 ## A small inhabited universe. 
 
