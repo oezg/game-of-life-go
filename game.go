@@ -6,23 +6,36 @@ import (
 	"time"
 )
 
-const generations = 10
+const (
+	maxIntervalBetweenGenerations = 9
+	minIntervalBetweenGenerations = time.Millisecond * 100
+)
 
 type Input struct {
-	Number int
-	//Seed        int64
+	Number      int
+	Seed        int64
 	Generations int
+	Speed       int
 }
 
 func getInput() Input {
 	var number int
-	//var seed int64
-	//var generations int
+	var seed int64
+	var generations int
+	var speed int
+	fmt.Print("Enter the size of the square: ")
 	fmt.Scanln(&number)
+	fmt.Print("Enter a random number: ")
+	fmt.Scanln(&seed)
+	fmt.Print("Enter the number of generations: ")
+	fmt.Scanln(&generations)
+	fmt.Printf("Enter the speed [1 - %d]: ", maxIntervalBetweenGenerations)
+	fmt.Scanln(&speed)
 	return Input{
-		Number: number,
-		//Seed:        seed,
+		Number:      number,
+		Seed:        seed,
 		Generations: generations,
+		Speed:       speed,
 	}
 }
 
@@ -34,6 +47,12 @@ func getFirstArray(number int) (square [][]int) {
 		}
 	}
 	return
+}
+
+func printHeader(array [][]int, generation int) {
+	fmt.Print("\033[H\033[2J")
+	fmt.Printf("Generation #%d\n", generation)
+	fmt.Printf("Alive: %d\n", getNumAliveCells(array))
 }
 
 func printArray(array [][]int) {
@@ -108,17 +127,21 @@ func getNumAliveCells(array [][]int) (aliveCells int) {
 	return
 }
 
+func slowDown(speed int) {
+	for i := maxIntervalBetweenGenerations; i >= speed; i-- {
+		time.Sleep(minIntervalBetweenGenerations)
+	}
+}
+
 func main() {
 	input := getInput()
-	//rand.Seed(input.Seed)
+	rand.Seed(input.Seed)
 	currentArray := getFirstArray(input.Number)
-	nextArray := getEmptyArray(input.Number, input.Number)
+	var nextArray [][]int
 	for i := 0; i < input.Generations; i++ {
-		fmt.Print("\033[H\033[2J")
-		fmt.Printf("Generation #%d\n", i+1)
-		fmt.Printf("Alive: %d\n", getNumAliveCells(currentArray))
+		printHeader(currentArray, i+1)
 		printArray(currentArray)
-		time.Sleep(time.Second / 3)
+		slowDown(input.Speed)
 		nextArray = getNextArray(currentArray)
 		currentArray = nextArray
 	}
